@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XeinHack - Game Keys Store</title>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+body {font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#333;}
+.container {max-width:1200px;margin:0 auto;padding:20px;}
+.header {text-align:center;margin-bottom:40px;padding:30px 0;}
+.header h1 {font-size:3rem;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.3);margin-bottom:10px;}
+.header p {font-size:1.2rem;color:rgba(255,255,255,0.9);}
+.reminder-note {background:linear-gradient(45deg,#ff6b6b,#ee5a52);color:white;padding:15px 20px;border-radius:10px;text-align:center;margin-bottom:30px;font-weight:bold;box-shadow:0 5px 15px rgba(255,107,107,0.3);}
+.products-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;margin-bottom:40px;}
+.product-card {background:white;border-radius:15px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,0.2);transition:transform 0.3s ease,box-shadow 0.3s ease;text-align:center;}
+.product-card:hover {transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,0.3);}
+.product-icon {width:80px;height:80px;margin:0 auto 20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.delta-icon {background:linear-gradient(135deg,#2c3e50,#34495e);color:#e74c3c;}
+.pubg-icon {background:linear-gradient(135deg,#ff9500,#ffb84d);color:white;}
+.product-title {font-size:1.5rem;font-weight:bold;margin-bottom:10px;color:#333;}
+.product-price {font-size:1.2rem;font-weight:bold;color:#667eea;margin:20px 0 15px 0;}
+.price-select {width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1rem;background:white;color:#333;cursor:pointer;transition:border-color 0.3s ease;margin-bottom:20px;}
+.price-select:focus {outline:none;border-color:#667eea;}
+.buy-btn {background:linear-gradient(45deg,#667eea,#764ba2);color:white;border:none;padding:12px 30px;border-radius:25px;font-size:1rem;font-weight:bold;cursor:pointer;transition:transform 0.2s ease;width:100%;}
+.buy-btn:hover {transform:scale(1.05);}
+.modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;}
+.modal-content {position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:15px;width:90%;max-width:500px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;}
+.modal-header {padding:25px 25px 0 25px;text-align:center;flex-shrink:0;}
+.modal-header h2 {color:#333;margin-bottom:10px;}
+.modal-body {padding:0 25px;flex:1;overflow-y:auto;min-height:0;}
+.form-group {margin-bottom:20px;}
+.form-group label {display:block;margin-bottom:8px;font-weight:bold;color:#333;}
+.form-group input {width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1rem;transition:border-color 0.3s ease;}
+.form-group input:focus {outline:none;border-color:#667eea;}
+.payment-info {background:#f8f9fa;padding:20px;border-radius:10px;margin:20px 0;}
+.payment-info h3 {color:#333;margin-bottom:15px;}
+.address-box {background:#e9ecef;padding:15px;border-radius:8px;margin:10px 0;position:relative;}
+.address-text {font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;margin:8px 0;word-break:break-all;padding-right:60px;}
+.copy-btn {position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#667eea;color:white;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:0.8rem;}
+.checkout-btn {background:linear-gradient(45deg,#28a745,#20c997);color:white;border:none;padding:15px 30px;border-radius:25px;font-size:1.1rem;font-weight:bold;cursor:pointer;width:100%;transition:transform 0.2s ease;}
+.checkout-btn:hover {transform:scale(1.02);}
+.close-btn {position:absolute;top:15px;right:20px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;z-index:1001;}
+/* Hamburger Menu */
+.hamburger-menu {position:fixed;top:20px;left:20px;z-index:2000;cursor:pointer;}
+.hamburger-lines span {display:block;width:30px;height:3px;margin:6px 0;background-color:white;transition:all 0.3s ease;}
+.menu-links {display:none;position:fixed;top:60px;left:20px;background:rgba(0,0,0,0.9);border-radius:10px;flex-direction:column;padding:15px 25px;z-index:2000;}
+.menu-links a {color:white;text-decoration:none;padding:10px 0;font-size:1.1rem;font-weight:bold;transition:color 0.3s ease;}
+.menu-links a:hover {color:#667eea;}
+.menu-links.show {display:flex;flex-direction:column;}
+@media(max-width:768px){.header h1{font-size:2rem;}.modal-content{width:95%;max-height:85vh;}.modal-header,.modal-body,.modal-footer{padding-left:20px;padding-right:20px;}.copy-btn{position:static;width:100%;margin-top:10px;transform:none;}.address-text{padding-right:0;margin-bottom:0;}}
+</style>
+</head>
+<body>
+
+<!-- Hamburger Menu -->
+<div class="hamburger-menu" id="hamburgerMenu">
+    <div class="hamburger-lines" id="hamburgerLines">
+        <span></span><span></span><span></span>
+    </div>
+    <div class="menu-links" id="menuLinks">
+        <a href="#" onclick="goBack()">Home</a>
+        <a href="#" onclick="trackOrderPrompt()">Track Order</a>
+        <a href="#" onclick="adminLoginPrompt()">Admin Login</a>
+    </div>
+</div>
+
+<div class="container" id="storePage">
+    <div class="header">
+        <h1>🎮 XeinHack</h1>
+        <p>Your Premium Game Keys Store</p>
+    </div>
+    <div class="reminder-note">
+        📸 REMINDER: Please screenshot crypto payment and receipt
+    </div>
+    <div class="products-grid" id="productsGrid">
+        <div class="product-card">
+            <div class="product-icon delta-icon">⚔️</div>
+            <div class="product-title">Delta Key</div>
+            <div class="product-price">Starting from $5</div>
+            <select id="deltaKeyOptions" class="price-select">
+                <option value="1 day - $5">1 Day - $5</option>
+                <option value="3 days - $8">3 Days - $8</option>
+                <option value="7 days - $12">7 Days - $12</option>
+                <option value="30 days - $23">30 Days - $23</option>
+            </select>
+            <button class="buy-btn" onclick="openCheckoutWithSelect('Delta Key','deltaKeyOptions')">Buy Now</button>
+        </div>
+        <div class="product-card">
+            <div class="product-icon pubg-icon">🎯</div>
+            <div class="product-title">PUBG Key</div>
+            <div class="product-price">Starting from $4</div>
+            <select id="pubgKeyOptions" class="price-select">
+                <option value="1 day - $4">1 Day - $4</option>
+                <option value="3 days - $7">3 Days - $7</option>
+                <option value="7 days - $11">7 Days - $11</option>
+                <option value="30 days - $22">30 Days - $22</option>
+            </select>
+            <button class="buy-btn" onclick="openCheckoutWithSelect('PUBG Key','pubgKeyOptions')">Buy Now</button>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal" id="checkoutModal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+        <div class="modal-header">
+            <h2>Checkout</h2>
+            <p id="selectedProduct">Selected Product</p>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="telegramUsername">Telegram Username *</label>
+                <input type="text" id="telegramUsername" placeholder="@username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" placeholder="your@email.com">
+            </div>
+            <div class="payment-info">
+                <h3>💳 Payment Information</h3>
+                <p><strong>Network:</strong> TRC-20</p>
+                <div class="address-box">
+                    <p><strong>Wallet Address:</strong></p>
+                    <p class="address-text" id="walletAddress">TEwKbkNdXqvNUG951nYTCRF6UjLGBn7pqc</p>
+                    <button type="button" class="copy-btn" onclick="copyAddress()">Copy</button>
+                </div>
+            </div>
+            <button class="checkout-btn" onclick="submitCheckout()">Submit Payment</button>
+        </div>
+    </div>
+</div>
+<!-- Receipt Page -->
+<div class="receipt-page" id="receiptPage">
+    <div class="receipt-header">
+        <h2>🔄 Verifying Payment</h2>
+        <p>Please wait while we verify your transaction</p>
+    </div>
+    <div class="receipt-details" id="receiptDetails"></div>
+    <div class="telegram-contact">
+        <h3>📱 Contact for Key Delivery</h3>
+        <a href="https://t.me/cocomelonqueen" class="telegram-link" target="_blank">@cocomelonqueen</a>
+        <div class="important-note">
+            📋 NOTE: Send BOTH payment screenshot and this receipt to the telegram account above
+        </div>
+    </div>
+    <p style="color: #666; margin: 20px 0;">
+        Your game key will be delivered to your Telegram account within 24 hours after verification.
+    </p>
+    <button class="back-btn" onclick="goBack()">← Back to Store</button>
+</div>
+
+<!-- Admin Modal as Page -->
+<div class="container" id="adminPage" style="display:none;">
+    <div class="header">
+        <h1>🔑 Admin Panel</h1>
+    </div>
+    <div class="reminder-note" style="background:linear-gradient(45deg,#333,#555);">
+        Admin Controls
+    </div>
+    <div id="adminStats" style="margin-bottom:20px;">
+        <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
+        <p><strong>Total Delivered:</strong> <span id="totalDelivered">0</span></p>
+        <p><strong>Total Profit:</strong> $<span id="totalProfit">0</span></p>
+        <p><strong>Total Earned:</strong> $<span id="totalEarned">0</span></p>
+    </div>
+    <h3>Manage Orders</h3>
+    <div id="ordersList"></div>
+    <button class="back-btn" onclick="closeAdminPage()">← Back to Store</button>
+</div>
+
+<script>
+// Hamburger Menu Toggle
+const hamburger = document.getElementById('hamburgerLines');
+const menuLinks = document.getElementById('menuLinks');
+hamburger.addEventListener('click', () => {
+    menuLinks.classList.toggle('show');
+});
+// Hide menu when link clicked
+document.querySelectorAll('.menu-links a').forEach(link=>{
+    link.addEventListener('click', ()=>{
+        menuLinks.classList.remove('show');
+    });
+});
+
+// Products & Checkout
+let currentProduct = '';
+let currentPrice = '';
+let orders = [];
+
+const profitTable = {
+    "Delta Key": {"1 day - $5":2,"3 days - $8":3,"7 days - $12":3,"30 days - $23":5},
+    "PUBG Key": {"1 day - $4":2,"3 days - $7":3,"7 days - $11":4,"30 days - $22":7}
+};
+
+function openCheckoutWithSelect(productName, selectId){
+    const selectElement = document.getElementById(selectId);
+    currentProduct = productName;
+    currentPrice = selectElement.value;
+    document.getElementById('selectedProduct').textContent = `${currentProduct} - ${currentPrice}`;
+    document.getElementById('checkoutModal').style.display = 'block';
+}
+function closeModal(){ document.getElementById('checkoutModal').style.display='none'; }
+function copyAddress(){
+    const address = document.getElementById('walletAddress').textContent;
+    navigator.clipboard.writeText(address);
+    alert('Wallet address copied!');
+}
+function generateOrderId(){
+    return 'XH'+Date.now().toString().slice(-6)+Math.random().toString(36).substr(2,3).toUpperCase();
+}
+function submitCheckout(){
+    const telegram = document.getElementById('telegramUsername').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if(!telegram){ alert('Enter Telegram username'); return; }
+    const order = {orderId:generateOrderId(), product:currentProduct, price:currentPrice, telegram, email, status:'Pending'};
+    orders.push(order);
+    closeModal();
+    showReceipt(order);
+}
+function showReceipt(order){
+    const receiptDetails = document.getElementById('receiptDetails');
+    const date = new Date();
+    receiptDetails.innerHTML = `
+        <div class="receipt-row"><span><strong>Order ID:</strong></span><span>${order.orderId}</span></div>
+        <div class="receipt-row"><span><strong>Product:</strong></span><span>${order.product}</span></div>
+        <div class="receipt-row"><span><strong>Duration & Price:</strong></span><span>${order.price}</span></div>
+        <div class="receipt-row"><span><strong>Telegram:</strong></span><span>${order.telegram}</span></div>
+        <div class="receipt-row"><span><strong>Email:</strong></span><span>${order.email||'Not provided'}</span></div>
+        <div class="receipt-row"><span><strong>Date:</strong></span><span>${date.toLocaleDateString()}</span></div>
+        <div class="receipt-row"><span><strong>Time:</strong></span><span>${date.toLocaleTimeString()}</span></div>
+        <div class="receipt-row"><span><strong>Payment Method:</strong></span><span>TRC-20 Wallet</span></div>
+        <div class="receipt-row"><span><strong>Wallet Address:</strong></span><span>TEwKbkNdXqvNUG951nYTCRF6UjLGBn7pqc</span></div>
+    `;
+    document.getElementById('storePage').style.display='none';
+    document.getElementById('receiptPage').style.display='block';
+}
+function goBack(){
+    document.getElementById('receiptPage').style.display='none';
+    document.getElementById('storePage').style.display='block';
+}
+
+// Track Order
+function trackOrderPrompt(){
+    const orderId = prompt("Enter your Order ID to track:");
+    if(!orderId) return;
+    const order = orders.find(o=>o.orderId===orderId.trim());
+    if(order) alert(`Order Status: ${order.status}`);
+    else alert("Order not found!");
+}
+
+// Admin Login & Page
+function adminLoginPrompt(){
+    const password = prompt("Enter Admin Password:");
+    if(password !== "80256348$"){ alert("Incorrect password"); return; }
+    openAdminPage();
+}
+function openAdminPage(){
+    document.getElementById('storePage').style.display='none';
+    document.getElementById('receiptPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    renderAdminOrders();
+}
+function closeAdminPage(){
+    document.getElementById('adminPage').style.display='none';
+    document.getElementById('storePage').style.display='block';
+}
+
+function renderAdminOrders(){
+    document.getElementById('totalOrders').textContent = orders.length;
+    const deliveredOrders = orders.filter(o=>o.status==='Delivered');
+    document.getElementById('totalDelivered').textContent = deliveredOrders.length;
+    let totalProfit=0, totalEarned=0;
+    deliveredOrders.forEach(o=>{
+        const p = profitTable[o.product][o.price];
+        totalProfit += p;
+        const priceValue = parseInt(o.price.split('$')[1]);
+        totalEarned += priceValue;
+    });
+    document.getElementById('totalProfit').textContent = totalProfit;
+    document.getElementById('totalEarned').textContent = totalEarned;
+
+    const ordersList = document.getElementById('ordersList');
+    ordersList.innerHTML='';
+    orders.forEach((o,i)=>{
+        const div = document.createElement('div');
+        div.style.padding='10px'; div.style.borderBottom='1px solid #ccc';
+        div.innerHTML = `
+            <p><strong>${o.orderId}</strong> - ${o.product} - ${o.price} - <span>Status: ${o.status}</span></p>
+            <button onclick="changeStatus(${i},'Pending')">Pending</button>
+            <button onclick="changeStatus(${i},'Delivered')">Delivered</button>
+            <button onclick="changeStatus(${i},'Cancelled')">Cancelled</button>
+        `;
+        ordersList.appendChild(div);
+    });
+}
+
+function changeStatus(index,newStatus){
+    orders[index].status=newStatus;
+    renderAdminOrders();
+}
+
+// Close modals by clicking outside
+window.addEventListener('click',function(e){
+    if(e.target.id==='checkoutModal') closeModal();
+});
+</script>
+</body>
+</html>
